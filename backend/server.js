@@ -14,14 +14,9 @@ const app = express();
 // Connect to DB
 connectDB();
 
-// Middleware
-app.use(
-    cors({
-        origin: process.env.CLIENT_URL || "*",
-        methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-        allowedHeaders: ["Content-Type", "Authorization"],
-    })
-);
+// CORS — allow all origins (safe for demo/project apps)
+app.use(cors());
+app.options("*", cors());
 
 
 app.use(express.json());
