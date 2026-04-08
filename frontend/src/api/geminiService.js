@@ -1,14 +1,7 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
-
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
-let genAI = null;
-let model = null;
-
-if (API_KEY) {
-    genAI = new GoogleGenerativeAI(API_KEY);
-    model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-}
+const MODEL_NAME = "gemini-1.5-flash";
+const API_URL = `https://generativelanguage.googleapis.com/v1/models/${MODEL_NAME}:generateContent?key=${API_KEY}`;
 
 const SYSTEM_PROMPT = `You are Fin Ledger AI, a friendly and concise financial advisor built into a personal finance app. 
 You analyze the user's transaction data and give short, actionable advice. 
@@ -17,20 +10,39 @@ Keep responses under 150 words unless asked for detail.
 Never suggest specific stocks or investments. Focus on budgeting and spending habits.`;
 
 /**
+ * Perform raw native fetch call to Google API v1.
+ */
+async function callGemini(promptText) {
+    if (!API_KEY) throw new Error("Missing API Key");
+
+    const response = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            contents: [{ parts: [{ text: promptText }] }]
+        })
+    });
+
+    if (!response.ok) {
+        throw new Error(`Google API responded with status ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.candidates[0].content.parts[0].text;
+}
+
+/**
  * Get financial advice from Gemini given a user prompt and financial context.
  */
 export async function getFinancialAdvice(userPrompt, financialContext) {
-    if (!model) {
+    if (!API_KEY) {
         return getFallbackAdvice(userPrompt, financialContext);
     }
 
     try {
         const contextStr = formatContext(financialContext);
         const fullPrompt = `${SYSTEM_PROMPT}\n\n--- User's Financial Data ---\n${contextStr}\n\n--- User's Question ---\n${userPrompt}`;
-
-        const result = await model.generateContent(fullPrompt);
-        const response = await result.response;
-        return response.text();
+        return await callGemini(fullPrompt);
     } catch (error) {
         console.error("Gemini API error:", error);
         return getFallbackAdvice(userPrompt, financialContext);
@@ -43,7 +55,7 @@ export async function getFinancialAdvice(userPrompt, financialContext) {
 export async function getSmartInsights(dashboardData) {
     if (!dashboardData) return getDefaultInsights();
 
-    if (!model) {
+    if (!API_KEY) {
         return getRuleBasedInsights(dashboardData);
     }
 
@@ -54,9 +66,7 @@ Each insight should be 1 sentence, specific with numbers from the data.
 Example format: [{"emoji": "🔥", "text": "Your food spending is 35% of total expenses."}]
 Return ONLY the JSON array, no other text.`;
 
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        const text = response.text().trim();
+        const text = await callGemini(prompt);
 
         // Extract JSON from response
         const jsonMatch = text.match(/\[[\s\S]*\]/);
