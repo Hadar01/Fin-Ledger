@@ -1,5 +1,12 @@
 // Base API URL
-export const BASE_URL = import.meta.env.VITE_API_URL;
+function getBaseUrl() {
+    let url = import.meta.env.VITE_API_URL || "";
+    if (url && !url.startsWith("http")) {
+        url = "https://" + url;
+    }
+    return url;
+}
+export const BASE_URL = getBaseUrl();
 
 export const API_PATHS = {
     AUTH: {
