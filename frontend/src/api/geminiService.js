@@ -7,7 +7,7 @@ let model = null;
 
 if (API_KEY) {
     genAI = new GoogleGenerativeAI(API_KEY);
-    model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    model = genAI.getGenerativeModel({ model: "gemini-3.0-flash" });
 }
 
 const SYSTEM_PROMPT = `You are Fin Ledger AI, a friendly and concise financial advisor built into a personal finance app. 
