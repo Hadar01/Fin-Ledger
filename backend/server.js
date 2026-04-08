@@ -32,6 +32,11 @@ app.use("/api/v1/income", incomeRoutes);
 app.use("/api/v1/expense", expenseRoutes);
 app.use("/api/v1/dashboard", dashboardRoutes);
 
-// Server start
-const PORT = process.env.PORT || 5001;
-app.listen(PORT, "0.0.0.0", () => console.log(`Server running on port ${PORT}`));
+// Export for Vercel serverless
+module.exports = app;
+
+// Only start the server locally (Vercel uses the exported app)
+if (process.env.NODE_ENV !== "production") {
+    const PORT = process.env.PORT || 5001;
+    app.listen(PORT, "0.0.0.0", () => console.log(`Server running on port ${PORT}`));
+}
