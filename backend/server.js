@@ -14,9 +14,8 @@ const app = express();
 // Connect to DB
 connectDB();
 
-// CORS — allow all origins (safe for demo/project apps)
+// CORS — allow all origins
 app.use(cors());
-app.options("*", cors());
 
 
 app.use(express.json());
