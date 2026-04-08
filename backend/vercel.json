@@ -31,5 +31,10 @@
                 { "key": "Access-Control-Allow-Credentials", "value": "true" }
             ]
         }
-    ]
+    ],
+    "env": {
+        "MONGO_URI": "mongodb+srv://aarushpandey820_db_user:WrJdzjF3ZMKBavvy@cluster0.vjlvmxt.mongodb.net/?appName=Cluster0",
+        "JWT_SECRET": "supersecretkey123",
+        "NODE_ENV": "production"
+    }
 }
