@@ -11,8 +11,11 @@ const dashboardRoutes = require("./routes/dashboardRoutes");
 
 const app = express();
 
-// Connect to DB
-connectDB();
+// Serverless DB Connection Middleware
+app.use(async (req, res, next) => {
+    await connectDB();
+    next();
+});
 
 // CORS — allow all origins
 app.use(cors());
