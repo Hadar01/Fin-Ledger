@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { LuSparkles, LuSend, LuX, LuMessageCircle } from "react-icons/lu";
 import { getFinancialAdvice } from "../../api/geminiService";
 import { cn } from "../../utlis/cn";
+import axiosInstance from "../../utlis/axiosInstance";
+import { API_PATHS } from "../../utlis/apiPaths";
 
 const QUICK_PROMPTS = [
     "How am I spending?",
@@ -11,8 +13,9 @@ const QUICK_PROMPTS = [
     "Top expenses",
 ];
 
-export default function AIAdvisorChat({ financialContext }) {
+export default function AIAdvisorChat() {
     const [isOpen, setIsOpen] = useState(false);
+    const [financialContext, setFinancialContext] = useState(null);
     const [messages, setMessages] = useState([
         {
             role: "assistant",
@@ -22,6 +25,13 @@ export default function AIAdvisorChat({ financialContext }) {
     const [input, setInput] = useState("");
     const [loading, setLoading] = useState(false);
     const chatEndRef = useRef(null);
+
+    // Fetch context on mount quietly
+    useEffect(() => {
+        axiosInstance.get(API_PATHS.DASHBOARD.GET_DATA)
+            .then(res => setFinancialContext(res.data))
+            .catch(err => console.error("AI context fetch error:", err));
+    }, []);
 
     useEffect(() => {
         chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
