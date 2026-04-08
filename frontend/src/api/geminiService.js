@@ -1,7 +1,7 @@
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
-const MODEL_NAME = "gemini-1.5-flash";
-const API_URL = `https://generativelanguage.googleapis.com/v1/models/${MODEL_NAME}:generateContent?key=${API_KEY}`;
+const MODEL_NAME = "gemini-flash-latest";
+const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${API_KEY}`;
 
 const SYSTEM_PROMPT = `You are Fin Ledger AI, a friendly and concise financial advisor built into a personal finance app. 
 You analyze the user's transaction data and give short, actionable advice. 
